@@ -193,6 +193,53 @@ function showAlert(message, type) {
     }, 3000);
 }
 
+// Search filter
+const searchInput = document.getElementById('search-input');
+if (searchInput) {
+    searchInput.addEventListener('input', function () {
+        const searchValue = this.value.toLowerCase();
+        const filtered = students.filter(student =>
+            (student.kode && student.kode.toLowerCase().includes(searchValue)) ||
+            (student.nama && student.nama.toLowerCase().includes(searchValue)) ||
+            (student.alamat && student.alamat.toLowerCase().includes(searchValue)) ||
+            (student.tanggal_lahir && student.tanggal_lahir.toLowerCase().includes(searchValue)) ||
+            (student.telepon && student.telepon.toLowerCase().includes(searchValue)) ||
+            (student.jurusan && student.jurusan.toLowerCase().includes(searchValue)) ||
+            (student.jenis_kelamin && student.jenis_kelamin.toLowerCase().includes(searchValue))
+        );
+        renderFilteredStudentData(filtered);
+    });
+}
+
+// Render filtered data
+function renderFilteredStudentData(filteredStudents) {
+    if (filteredStudents.length === 0) {
+        studentData.innerHTML = '';
+        noData.classList.remove('hidden');
+        return;
+    }
+    noData.classList.add('hidden');
+    studentData.innerHTML = filteredStudents.map((student, index) => `
+        <tr class="${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-blue-50 transition-colors">
+            <td class="py-3 px-4 border-b border-gray-200">${student.kode}</td>
+            <td class="py-3 px-4 border-b border-gray-200">${student.nama}</td>
+            <td class="py-3 px-4 border-b border-gray-200">${student.alamat}</td>
+            <td class="py-3 px-4 border-b border-gray-200">${formatDate(student.tanggal_lahir)}</td>
+            <td class="py-3 px-4 border-b border-gray-200">${student.telepon}</td>
+            <td class="py-3 px-4 border-b border-gray-200">${student.jurusan || ''}</td>
+            <td class="py-3 px-4 border-b border-gray-200">${student.jenis_kelamin || ''}</td>
+            <td class="py-3 px-4 border-b border-gray-200 text-center">
+                <button onclick="editStudent(${students.indexOf(student)})" class="btn-warning bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-md mr-2">
+                    Edit
+                </button>
+                <button onclick="deleteStudent(${students.indexOf(student)})" class="btn-danger bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md">
+                    Hapus
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
 // Initialize
 window.editStudent = editStudent;
 window.deleteStudent = deleteStudent;
