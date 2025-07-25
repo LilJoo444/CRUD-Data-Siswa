@@ -27,7 +27,7 @@ navTable.addEventListener('click', () => {
     tableSection.classList.remove('hidden');
     navForm.classList.remove('active');
     navTable.classList.add('active');
-    renderStudentData();
+    renderStudentData(students);
 });
 
 // Form submission
@@ -70,7 +70,7 @@ editForm.addEventListener('submit', (e) => {
 
     saveData();
     closeEditModal();
-    renderStudentData();
+    renderStudentData(students);
 
     // Show success message
     showAlert('Data siswa berhasil diperbarui!', 'success');
@@ -81,33 +81,31 @@ closeModal.addEventListener('click', closeEditModal);
 cancelEdit.addEventListener('click', closeEditModal);
 
 // Render student data
-function renderStudentData() {
-    if (students.length === 0) {
-        studentData.innerHTML = '';
-        noData.classList.remove('hidden');
-        return;
-    }
+function renderStudentData(students) {
+    const studentData = document.getElementById('student-data');
+    studentData.innerHTML = ''; // Clear existing data
 
-    noData.classList.add('hidden');
-    studentData.innerHTML = students.map((student, index) => `
-        <tr class="${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-blue-50 transition-colors">
-            <td class="py-3 px-4 border-b border-gray-200">${student.kode}</td>
-            <td class="py-3 px-4 border-b border-gray-200">${student.nama}</td>
-            <td class="py-3 px-4 border-b border-gray-200">${student.alamat}</td>
-            <td class="py-3 px-4 border-b border-gray-200">${formatDate(student.tanggal_lahir)}</td>
-            <td class="py-3 px-4 border-b border-gray-200">${student.telepon}</td>
-            <td class="py-3 px-4 border-b border-gray-200">${student.jurusan || ''}</td>
-            <td class="py-3 px-4 border-b border-gray-200">${student.jenis_kelamin || ''}</td>
-            <td class="py-3 px-4 border-b border-gray-200 text-center">
-                <button onclick="editStudent(${index})" class="btn-warning bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-md mr-2">
-                    Edit
+    students.forEach((student, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="py-3 px-4">${student.kode}</td>
+            <td class="py-3 px-4">${student.nama}</td>
+            <td class="py-3 px-4">${student.alamat}</td>
+            <td class="py-3 px-4">${student.tanggal_lahir}</td>
+            <td class="py-3 px-4">${student.telepon}</td>
+            <td class="py-3 px-4">${student.jurusan}</td>
+            <td class="py-3 px-4">${student.jenis_kelamin}</td>
+            <td class="py-3 px-4 text-center">
+                <button class="text-blue-600 hover:text-blue-800 mx-1" title="Edit" onclick="editStudent(${index})">
+                    <i class="fas fa-edit"></i>
                 </button>
-                <button onclick="deleteStudent(${index})" class="btn-danger bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md">
-                    Hapus
+                <button class="text-red-600 hover:text-red-800 mx-1" title="Hapus" onclick="deleteStudent(${index})">
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             </td>
-        </tr>
-    `).join('');
+        `;
+        studentData.appendChild(row);
+    });
 }
 
 // Edit student
@@ -131,7 +129,7 @@ function deleteStudent(index) {
     if (confirm('Apakah Anda yakin ingin menghapus data siswa ini?')) {
         students.splice(index, 1);
         saveData();
-        renderStudentData();
+        renderStudentData(students);
         showAlert('Data siswa berhasil dihapus!', 'danger');
     }
 }
@@ -246,5 +244,5 @@ window.deleteStudent = deleteStudent;
 
 // Check if there's data to display
 if (students.length > 0) {
-    renderStudentData();
+    renderStudentData(students);
 }
